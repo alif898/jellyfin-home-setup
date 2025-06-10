@@ -10,7 +10,7 @@ services:
       - VPN_SERVICE_PROVIDER=protonvpn
       - SERVER_COUNTRIES=Japan
       - FREE_ONLY=on
-      - TZ=Asia/Singapore
+      - TZ=${TZ}
       - FIREWALL=on
       - FIREWALL_OUTBOUND_SUBNETS=${OUTBOUND_SUBNETS}
     env_file:
@@ -18,7 +18,7 @@ services:
     volumes:
       - ./gluetun:/gluetun
     ports:
-      - 5055:5055
+      - "5055:5055"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "https://www.google.com"]
@@ -33,7 +33,7 @@ services:
     network_mode: "container:protonvpn"
     environment:
       - LOG_LEVEL=debug
-      - TZ=Asia/Singapore
+      - TZ=${TZ}
       - PORT=5055
     volumes:
       - jellyseerr-data:/app/config
@@ -41,9 +41,56 @@ services:
     depends_on:
       protonvpn:
         condition: service_healthy
+  
+  scraparr:
+    image: ghcr.io/thecfu/scraparr:latest
+    container_name: scraparr
+    ports:
+      - "7100:7100"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+    - .env
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports: 
+     - "9090:9090"
+    volumes:
+     - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+     - prometheus-data:/prometheus
+    networks:
+     - monitoring
+    restart: unless-stopped
+  
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    env_file:
+      - .env
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+
+networks:
+  monitoring:
+    driver: bridge
 
 volumes:
   jellyseerr-data:
-    external: true
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
 
-#
