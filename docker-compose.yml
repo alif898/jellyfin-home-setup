@@ -1,0 +1,49 @@
+services:
+  protonvpn:
+    image: qmcgaw/gluetun
+    container_name: protonvpn
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    environment:
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - SERVER_COUNTRIES=Japan
+      - FREE_ONLY=on
+      - TZ=Asia/Singapore
+      - FIREWALL=on
+      - FIREWALL_OUTBOUND_SUBNETS=${OUTBOUND_SUBNETS}
+    env_file:
+      - .env
+    volumes:
+      - ./gluetun:/gluetun
+    ports:
+      - 5055:5055
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "https://www.google.com"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    network_mode: "container:protonvpn"
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=Asia/Singapore
+      - PORT=5055
+    volumes:
+      - jellyseerr-data:/app/config
+    restart: unless-stopped
+    depends_on:
+      protonvpn:
+        condition: service_healthy
+
+volumes:
+  jellyseerr-data:
+    external: true
+
+#
