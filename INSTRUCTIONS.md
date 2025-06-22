@@ -30,6 +30,8 @@ These applications should be installed as a Windows service, where they will lau
 ![Prometheus Badge](https://img.shields.io/badge/Prometheus-E6522C?logo=prometheus&logoColor=fff&style=flat)
 ![Grafana Badge](https://img.shields.io/badge/Grafana-F46800?logo=grafana&logoColor=fff&style=flat)
 
+![OpenAI Badge](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=fff&style=flat)
+
 These applications are run on Docker, configured using the `docker-compose.yml`.
 
 A `.env` file is needed, the necessary keys are found in the example `sample.env`.
@@ -39,9 +41,13 @@ For example, `999.999.9.0/24`, which will cover 0 to 24 for that network.
 
 Jellyseerr uses Proton VPN to ensure connections to the external APIs required by Jellyseerr.
 Proton VPN is run via Gluetun and once a health check passes, Jellyseerr will be initialized.
+
 scraparr utilises the `.env` file to search for the *arr stack applications.
 Prometheus is configured using `/prometheus/prometheus.yml`.
 Connecting to Prometheus from Grafana is done directly on its UI after successful launch.
+
+Whisper is also run on Docker, using the Whisper Automatic Speech Recognition (ASR) Webservice API [project](https://github.com/ahmetoner/whisper-asr-webservice).
+Specifically, the [faster_whisper](https://github.com/SYSTRAN/faster-whisper) implementation is used as it is more computationally efficient.
 
 To run the Docker setup:
 ```
@@ -62,6 +68,7 @@ docker-compose up -d
 | scraparr    | 7100 |
 | Prometheus  | 9090 |
 | Grafana     | 3000 |
+| Whisper     | 9000 |
 
 From the end user perspective, only ports 8096 (Jellyfin) and 5055 (Jellyseerr) are relevant.
 

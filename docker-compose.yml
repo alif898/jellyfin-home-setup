@@ -81,6 +81,15 @@ services:
       - monitoring
     restart: unless-stopped
 
+  whisperasr:
+    image: onerahmet/openai-whisper-asr-webservice:latest
+    container_name: whisperasr
+    environment:
+      - ASR_MODEL=tiny
+      - ASR_ENGINE=faster_whisper
+    ports:
+      - "9000:9000"
+    restart: unless-stopped
 
 networks:
   monitoring:
