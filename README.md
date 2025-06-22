@@ -10,13 +10,15 @@ To replicate the setup: [Instructions](INSTRUCTIONS.md)
 - [Future Plans](#future-plans)
 
 ## Overview
+
 This project is a comprehensive, self-hosted content management and media streaming platform,
-with automated media download workflows, seamless remote access and robust monitoring.
+with automated & AI-driven media download workflows, seamless remote access and robust monitoring.
 [Jellyfin](https://jellyfin.org/) is a versatile and open-source media server technology and is the main application around which this project is based on.
 
 ## List of applications/technologies
 
 ### Media server
+
 ![Jellyfin Badge](https://img.shields.io/badge/Jellyfin-00A4DC?logo=jellyfin&logoColor=fff&style=flat)
 
 Jellyfin is the main application in the setup and other applications in the system are able to integrate with Jellyfin. 
@@ -29,12 +31,23 @@ It comes with web/mobile clients for users to view content, as well as an admin 
 ![prowlarr](https://img.shields.io/badge/prowlarr-DC640D?style=flat)
 ![radarr Badge](https://img.shields.io/badge/radarr-FFCB3D?logo=radarr&logoColor=000&style=flat)
 ![sonarr Badge](https://img.shields.io/badge/sonarr-2596BE?logo=sonarr&logoColor=fff&style=flat)
-![bazarr](https://img.shields.io/badge/bazarr-4958B2?style=flat)
 
 This setup utilizes a suite of applications for automated media downloading and organization. 
 qBittorrent is the torrent client used to download content. sonarr and radarr will automate download requests to qBittorrent, 
 for TV shows and movies respectively, by searching for content on the indexers provided by prowlarr. 
 bazarr is responsible for managing subtitles for all downloaded content.
+
+### Subtitles downloader
+
+![bazarr](https://img.shields.io/badge/bazarr-4958B2?style=flat)
+![OpenAI Badge](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=fff&style=flat)
+
+Along with the media downloader setup, bazarr is responsible for managing subtitles for all downloaded content.
+bazarr will search a variety of subtitle sources online and fetch them accordingly.
+On top of the traditional online subtitle providers, bazarr is integrated with Whisper.
+[Whisper](https://en.wikipedia.org/wiki/Whisper_(speech_recognition_system)) is a speech recognition model from OpenAI,
+that can be integrated with bazarr, allowing it to transcribe and translate audio into accurate multilingual subtitles.
+However, it is computationally cheaper to just search the traditional providers, hence, Whisper is used only as a last-resort.
 
 ### Media request interface
 
@@ -74,11 +87,14 @@ displaying key information through dashboards.
 ### Hardware
 
 At the moment, the entire setup is run on an old Dell Inspiron laptop, with 8GB of RAM, using a 2TB Seagate external drive.
+Hence, there may be occasional performance issues with the setup, especially when using Whisper to generate subtitles.
 
 ## User experience
+
 From the end user perspective, there are only three interfaces, which are Tailscale, to connect to the network, Jellyfin, to play content, and Jellyseerr, to request content.
 
 Once a content request on Jellyseerr is approved, it will be downloaded automatically, inclusive of subtitles, and once done, Jellyfin will automatically be updated.
 
 ## Future plans
+
 Future enhancements, as well as any user feedback or issues, are tracked on [GitHub Issues](https://github.com/alif898/jellyfin-home-setup/issues).
