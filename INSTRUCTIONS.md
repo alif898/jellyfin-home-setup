@@ -56,19 +56,19 @@ docker-compose up -d
 
 ## Port directory
 
-| Application | Port |
-|-------------|------|
-| Jellyfin    | 8096 |
-| Jellyseerr  | 5055 |
-| radarr      | 7878 |
-| sonarr      | 8989 |
-| prowlarr    | 9696 |
-| bazarr      | 6767 |
-| qBittorrent | 8080 |
-| scraparr    | 7100 |
-| Prometheus  | 9090 |
-| Grafana     | 3000 |
-| Whisper     | 9000 |
+| Application | Port | Discord                | Telegram |
+|-------------|------|------------------------|----------|
+| Jellyfin    | 8096 | Yes, but need to debug |          |
+| Jellyseerr  | 5055 | Yes                    | Yes      |
+| radarr      | 7878 | Yes                    | Yes      |
+| sonarr      | 8989 | Yes                    | Yes      |
+| prowlarr    | 9696 | Yes                    | Yes      |
+| bazarr      | 6767 | Yes                    | Yes      |
+| qBittorrent | 8080 |                        |          |
+| scraparr    | 7100 |                        |          |
+| Prometheus  | 9090 |                        |          |
+| Grafana     | 3000 |                        |          |
+| Whisper     | 9000 |                        |          |
 
 From the end user perspective, only ports 8096 (Jellyfin) and 5055 (Jellyseerr) are relevant.
 
