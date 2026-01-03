@@ -1,3 +1,5 @@
+.idea
+
 .env
 /gluetun
-/notifications/telegram_bot_credentials.bat
+/qbittorrent/telegram_bot_credentials.bat
