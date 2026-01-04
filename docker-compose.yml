@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   protonvpn:
     image: qmcgaw/gluetun
@@ -18,7 +20,7 @@ services:
     volumes:
       - ./gluetun:/gluetun
     ports:
-      - "5055:5055"
+      - "5055:5055"   # Jellyseerr
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "https://www.google.com"]
@@ -32,74 +34,113 @@ services:
     container_name: jellyseerr
     network_mode: "container:protonvpn"
     environment:
-      - LOG_LEVEL=debug
       - TZ=${TZ}
       - PORT=5055
     volumes:
-      - jellyseerr-data:/app/config
+      - /mnt/media/config/jellyseerr:/app/config
     restart: unless-stopped
     depends_on:
       protonvpn:
         condition: service_healthy
-  
+
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    ports:
+      - "8096:8096"
+    volumes:
+      - /mnt/media/config/jellyfin:/config
+      - /mnt/media/Media:/media:ro
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    ports:
+      - "8989:8989"
+    volumes:
+      - /mnt/media/config/sonarr:/config
+      - /mnt/media/Media:/media
+      - /mnt/media/downloads:/downloads
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    ports:
+      - "7878:7878"
+    volumes:
+      - /mnt/media/config/radarr:/config
+      - /mnt/media/Media:/media
+      - /mnt/media/downloads:/downloads
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    ports:
+      - "9696:9696"
+    volumes:
+      - /mnt/media/config/prowlarr:/config
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    ports:
+      - "6767:6767"
+    volumes:
+      - /mnt/media/config/bazarr:/config
+      - /mnt/media/Media:/media
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+
   scraparr:
     image: ghcr.io/thecfu/scraparr:latest
     container_name: scraparr
     ports:
       - "7100:7100"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     env_file:
-    - .env
+      - .env
     restart: unless-stopped
 
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
-    ports: 
-     - "9090:9090"
+    ports:
+      - "9090:9090"
     volumes:
-     - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-     - prometheus-data:/prometheus
-    networks:
-     - monitoring
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - /mnt/media/config/prometheus:/prometheus
     restart: unless-stopped
-  
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
       - "3000:3000"
     volumes:
-      - grafana-data:/var/lib/grafana
-    env_file:
-      - .env
+      - /mnt/media/config/grafana:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
-    networks:
-      - monitoring
     restart: unless-stopped
 
   whisperasr:
     image: onerahmet/openai-whisper-asr-webservice:latest
     container_name: whisperasr
+    ports:
+      - "9000:9000"
     environment:
       - ASR_MODEL=tiny
       - ASR_ENGINE=faster_whisper
-    ports:
-      - "9000:9000"
     restart: unless-stopped
-
-networks:
-  monitoring:
-    driver: bridge
-
-volumes:
-  jellyseerr-data:
-    driver: local
-  prometheus-data:
-    driver: local
-  grafana-data:
-    driver: local
-
